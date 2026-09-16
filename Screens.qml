@@ -71,6 +71,11 @@ Panel {
     { value: "2", label: "Fullscreen" },
     { value: "3", label: "Games & video" }
   ]
+  // Hyprland per-output bitdepth: 8 (default) or 10. HDR always forces 10.
+  readonly property var bitdepthOptions: [
+    { value: "8", label: "8-bit" },
+    { value: "10", label: "10-bit" }
+  ]
   readonly property string barScreenName: {
     var win = button.QsWindow ? button.QsWindow.window : null
     return (win && win.screen) ? String(win.screen.name) : ""
@@ -195,6 +200,12 @@ Panel {
     if (!isFinite(n) || n < 0) n = 0
     if (n > 3) n = 3
     mutateSelected(function(m) { m.vrr = n })
+  }
+
+  function setBitdepth(value) {
+    if (root.selected && root.selected.hdr) return
+    var n = parseInt(value, 10) === 10 ? 10 : 8
+    mutateSelected(function(m) { m.bitdepth = n })
   }
 
   function setHdr(on) {
@@ -1083,6 +1094,19 @@ Panel {
               foreground: root.bar.foreground
               fontFamily: root.bar.fontFamily
               onClicked: root.setHdr(!(root.selected && root.selected.hdr))
+            }
+
+            Dropdown {
+              width: parent.width
+              label: root.selected && root.selected.hdr ? "BIT DEPTH · SET BY HDR" : "BIT DEPTH"
+              showLabel: true
+              enabled: !(root.selected && root.selected.hdr)
+              opacity: enabled ? 1 : 0.5
+              foreground: root.bar.foreground
+              fontFamily: root.bar.fontFamily
+              value: root.selected && (root.selected.hdr || Number(root.selected.bitdepth) === 10) ? "10" : "8"
+              options: root.bitdepthOptions
+              onChanged: function(v) { root.setBitdepth(v) }
             }
 
             Dropdown {

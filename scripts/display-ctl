@@ -192,15 +192,25 @@ def vrr_mode(mon):
         return 0
 
 
-def parse_lua_vrr(text):
+def parse_lua_fields(text):
     found = {}
     for block in re.findall(r"hl\.monitor\(\{\s*(.*?)\s*\}\)", text or "", re.S):
         out = re.search(r'output\s*=\s*"([^"]+)"', block)
         if not out or not out.group(1):
             continue
-        m = re.search(r"vrr\s*=\s*(\d+)", block)
-        found[out.group(1)] = int(m.group(1)) if m else 0
+        vrr = re.search(r"\bvrr\s*=\s*(\d+)", block)
+        depth = re.search(r"\bbitdepth\s*=\s*(\d+)", block)
+        found[out.group(1)] = {
+            "vrr": int(vrr.group(1)) if vrr else 0,
+            "bitdepth": int(depth.group(1)) if depth else 8,
+            "hdr": bool(re.search(r'\bcm\s*=\s*"hdr', block)),
+        }
     return found
+
+
+def is_ten_bit(fmt):
+    fmt = str(fmt or "").upper()
+    return any(tok in fmt for tok in ("2101010", "101010", "P010", "P012"))
 
 
 def read_monitors_lua():
@@ -213,12 +223,9 @@ def read_monitors_lua():
 
 def is_hdr(mon):
     cm = str(mon.get("colorManagementPreset") or "").lower()
-    fmt = str(mon.get("currentFormat") or "").upper()
     if cm in ("hdr", "hdredid"):
         return True
-    if any(tok in fmt for tok in ("2101010", "101010", "P010", "P012")):
-        return True
-    return False
+    return is_ten_bit(mon.get("currentFormat"))
 
 
 def group_resolutions(modes):
@@ -366,6 +373,7 @@ def stub_monitor(name):
         "scale": 1,
         "transform": 0,
         "vrr": 0,
+        "bitdepth": 8,
         "cm": "srgb",
         "format": "",
         "hdr": False,
@@ -429,6 +437,7 @@ def snapshot():
             "scale": float(scale),
             "transform": transform,
             "vrr": vrr,
+            "bitdepth": 10 if is_ten_bit(mon.get("currentFormat")) else 8,
             "cm": mon.get("colorManagementPreset") or "srgb",
             "format": mon.get("currentFormat") or "",
             "hdr": hdr_on,
@@ -444,13 +453,17 @@ def snapshot():
         }
         entry["identity"] = monitor_identity(entry)
         monitors.append(entry)
-    lua_vrr = parse_lua_vrr(read_monitors_lua())
+    lua_fields = parse_lua_fields(read_monitors_lua())
     for entry in monitors:
-        key = entry.get("identity") or ""
-        if key in lua_vrr:
-            entry["vrr"] = lua_vrr[key]
-        elif entry.get("name") in lua_vrr:
-            entry["vrr"] = lua_vrr[entry["name"]]
+        rule = lua_fields.get(entry.get("identity") or "") or lua_fields.get(entry.get("name"))
+        if not rule:
+            continue
+        entry["vrr"] = rule["vrr"]
+        if rule["bitdepth"] == 10:
+            entry["bitdepth"] = 10
+        # A 10-bit SDR output reports a 10-bit format; that is not HDR.
+        if entry["hdr"] and not rule["hdr"] and str(entry.get("cm")).lower() not in ("hdr", "hdredid"):
+            entry["hdr"] = False
     merge_drm_connected(monitors)
     store = load_store()
     ids = [m["identity"] for m in monitors if m.get("identity")]
@@ -581,7 +594,7 @@ def restore_desk_geometry(monitors):
         rule = hints.get(mon.get("identity") or "")
         if not rule:
             continue
-        for key in ("mode", "x", "y", "scale", "transform", "vrr", "hdr"):
+        for key in ("mode", "x", "y", "scale", "transform", "vrr", "bitdepth", "hdr"):
             if key in rule:
                 mon[key] = rule[key]
         mon["mirror"] = ""
@@ -808,6 +821,7 @@ def sanitize_monitor(mon, known_names=None):
         "scale": clean_scale(mon.get("scale")),
         "transform": clean_int(mon.get("transform"), 0, 7, 0),
         "vrr": clean_int(mon.get("vrr"), 0, 3, 0),
+        "bitdepth": 10 if clean_int(mon.get("bitdepth"), 8, 10, 8) == 10 else 8,
         "hdr": bool(mon.get("hdr")),
         "enabled": bool(mon.get("enabled", True)),
         "identity": mon.get("identity") or "",
@@ -842,6 +856,8 @@ def monitor_lua(mon, used_desc):
         fields.append("bitdepth = 10")
         fields.append('cm = "hdr"')
         fields.append("supports_hdr = 1")
+    elif int(mon.get("bitdepth") or 8) == 10:
+        fields.append("bitdepth = 10")
     mirror = mon.get("mirror") or ""
     if mirror and mirror not in ("none", name, mon.get("name")):
         fields.append("mirror = %s" % lua_str(mirror))
@@ -1026,6 +1042,7 @@ def profile_entry_from_monitor(mon):
         "scale": mon.get("scale") if mon.get("scale") not in (None, "") else 1,
         "transform": int(mon.get("transform") or 0),
         "vrr": int(mon.get("vrr") or 0),
+        "bitdepth": 10 if int(mon.get("bitdepth") or 8) == 10 else 8,
         "hdr": bool(mon.get("hdr")),
         "enabled": bool(mon.get("enabled", True)),
         "mirror": mon.get("mirror") or "",
@@ -1041,7 +1058,7 @@ def merge_profile(profile, live):
             merged.append(live_m)
             continue
         item = dict(live_m)
-        for key in ("mode", "x", "y", "scale", "transform", "vrr", "hdr", "enabled", "mirror"):
+        for key in ("mode", "x", "y", "scale", "transform", "vrr", "bitdepth", "hdr", "enabled", "mirror"):
             if key in rule:
                 item[key] = rule[key]
         # Profile mirror is stored as identity; Hyprland wants a connector.

@@ -18,6 +18,7 @@ function clone(monitors) {
       scale: m.scale,
       transform: m.transform,
       vrr: m.vrr,
+      bitdepth: m.bitdepth,
       cm: m.cm,
       format: m.format,
       hdr: m.hdr,
@@ -222,6 +223,7 @@ function applyPayload(monitors) {
       scale: m.scale,
       transform: m.transform,
       vrr: m.vrr,
+      bitdepth: Number(m.bitdepth) === 10 ? 10 : 8,
       hdr: !!m.hdr,
       enabled: !!m.enabled,
       identity: m.identity,
@@ -289,6 +291,7 @@ function heroStatus(mon, profileName) {
   var hz = Number(mon.refresh)
   if (isFinite(hz) && hz > 0) bits.push(Math.round(hz) + " Hz")
   if (mon.hdr) bits.push("HDR")
+  else if (Number(mon.bitdepth) === 10) bits.push("10-BIT")
   if (Number(mon.vrr) === 1) bits.push("VRR")
   else if (Number(mon.vrr) === 2) bits.push("VRR FS")
   else if (Number(mon.vrr) === 3) bits.push("VRR GAME")
