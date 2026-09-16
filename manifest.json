@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "im0001gt.screens",
+  "id": "sykesthelord.screens",
   "name": "Screens",
   "version": "1.13.1",
-  "author": "IM0001GT",
+  "author": "SykesTheLord",
   "license": "MIT",
-  "homepage": "https://github.com/IM0001GT/omarchy-screens",
+  "homepage": "https://github.com/SykesTheLord/omarchy-screens",
   "description": "Snap-to-edge monitor layout with brightness, text size, HDR, VRR, hardware-aware profiles, optional bar dim, and 10-workspace spreading with names and icons",
   "kinds": [
     "bar-widget",

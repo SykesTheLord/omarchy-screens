@@ -9,9 +9,9 @@ Item {
   property var manifest: null
   property var shell: null
   readonly property string ctl:
-    Quickshell.env("HOME") + "/.config/omarchy/plugins/im0001gt.screens/scripts/display-ctl"
+    Quickshell.env("HOME") + "/.config/omarchy/plugins/sykesthelord.screens/scripts/display-ctl"
   readonly property string carePath:
-    Quickshell.env("HOME") + "/.local/state/im0001gt.screens/bar-care.json"
+    Quickshell.env("HOME") + "/.local/state/sykesthelord.screens/bar-care.json"
 
   property var careConfig: Model.normalizeBarCare(null)
   property bool panelWanted: false
@@ -112,7 +112,7 @@ Item {
   property real revertDeadline: 0
 
   FileView {
-    path: Quickshell.env("HOME") + "/.local/state/im0001gt.screens/panel.json"
+    path: Quickshell.env("HOME") + "/.local/state/sykesthelord.screens/panel.json"
     watchChanges: true
     atomicWrites: true
     printErrors: false
@@ -137,7 +137,7 @@ Item {
   }
 
   FileView {
-    path: Quickshell.env("HOME") + "/.local/state/im0001gt.screens/profiles.json"
+    path: Quickshell.env("HOME") + "/.local/state/sykesthelord.screens/profiles.json"
     watchChanges: true
     printErrors: false
     onLoaded: {

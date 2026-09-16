@@ -34,12 +34,12 @@ Screens keeps the editor in the bar, follows the theme, and writes Hyprland Lua 
 Plugins run as unsandboxed code inside `omarchy-shell`. Only add repos you trust.
 
 ```bash
-omarchy plugin add https://github.com/IM0001GT/omarchy-screens --enable
+omarchy plugin add https://github.com/SykesTheLord/omarchy-screens --enable
 ```
 
-That places the plugin in `~/.config/omarchy/plugins/im0001gt.screens/` and can drop the widget on the right side of the bar, next to Display.
+That places the plugin in `~/.config/omarchy/plugins/sykesthelord.screens/` and can drop the widget on the right side of the bar, next to Display.
 
-The first time Screens runs, it copies every stock file it may change into `~/.local/state/im0001gt.screens/originals/` (and a copy of `monitors.lua` at `original-monitors.lua`). Those copies are never overwritten, live outside the plugin directory, and do not depend on a system snapshot. It then starts from a **fresh** Screens-owned `monitors.lua` taken from the live Hyprland layout, so leftover edits from hyprmoncfg or another layout tool cannot keep controlling the desk.
+The first time Screens runs, it copies every stock file it may change into `~/.local/state/sykesthelord.screens/originals/` (and a copy of `monitors.lua` at `original-monitors.lua`). Those copies are never overwritten, live outside the plugin directory, and do not depend on a system snapshot. It then starts from a **fresh** Screens-owned `monitors.lua` taken from the live Hyprland layout, so leftover edits from hyprmoncfg or another layout tool cannot keep controlling the desk.
 
 If [hyprmoncfg](https://github.com/crmne/omarchy-hyprmoncfg) is still managing displays, the Screens panel offers **Keep unmanaged** (`hyprmoncfg unmanage`, plugin can stay) or **Remove hyprmoncfg** (unmanage, then `omarchy plugin remove crmne.hyprmoncfg`). Screens does not do either until you click. If hyprmoncfg is already unmanaged, Screens takes over and only reminds you the plugin is still on the bar until you keep or remove it. The AUR package is left unless you drop it yourself.
 
@@ -82,7 +82,7 @@ If [HyprMod](https://github.com/BlueManCZ/hyprmod) is managing displays, its `hy
 
 **Workspaces**
 
-- **Spread workspaces** pins ten workspaces across the screens that are on and not mirroring. Omarchy 4.0.3 no longer lets a plugin register a second bar widget at runtime, so Screens installs a companion plugin (`im0001gt.screens.workspaces`) next to this one. You still only add Screens; spreading swaps that companion onto the bar in place of stock Workspaces.
+- **Spread workspaces** pins ten workspaces across the screens that are on and not mirroring. Omarchy 4.0.3 no longer lets a plugin register a second bar widget at runtime, so Screens installs a companion plugin (`sykesthelord.screens.workspaces`) next to this one. You still only add Screens; spreading swaps that companion onto the bar in place of stock Workspaces.
 - Two screens: primary gets **1–5**, the next screen gets **6–10**. More screens split the ten as evenly as possible (a leftover slot goes to the first screens). Nine screens means one gets two workspaces and the rest get one
 - **Make primary** chooses which screen receives the first group
 - Each display's bar then shows only that screen's numbers. **Left-click** a number to go there. **Right-click** that same number to **name** it, pick an **icon**, or set **Tile**, **Scroll**, or **Float**. Those choices apply only to that workspace
@@ -97,9 +97,9 @@ If [HyprMod](https://github.com/BlueManCZ/hyprmod) is managing displays, its `hy
 - **On connect** reapplies a matching profile when a display is plugged in
 - Turning a display on, or turning **Mirror** off, restores the matching saved layout instead of leaving tiles stacked
 
-Changes write `~/.config/hypr/monitors.lua` after you drag, turn a display on, or save. Later applies keep a short rolling set of timestamped copies in `~/.local/state/im0001gt.screens/`. Leftover rules from stock Omarchy, hyprmoncfg, or another editor are replaced after the original file is copied aside.
+Changes write `~/.config/hypr/monitors.lua` after you drag, turn a display on, or save. Later applies keep a short rolling set of timestamped copies in `~/.local/state/sykesthelord.screens/`. Leftover rules from stock Omarchy, hyprmoncfg, or another editor are replaced after the original file is copied aside.
 
-Move it with `omarchy bar move im0001gt.screens`.
+Move it with `omarchy bar move sykesthelord.screens`.
 
 ## Multi-GPU desks
 
@@ -110,7 +110,7 @@ Resolution lists come from Hyprland / the EDID. A DP-to-DVI adapter that only ad
 ## Update
 
 ```bash
-omarchy plugin update im0001gt.screens --yes
+omarchy plugin update sykesthelord.screens --yes
 omarchy restart shell
 ```
 
@@ -125,19 +125,19 @@ omarchy restart shell
 Restore the pre-Screens files first, then remove the plugin:
 
 ```bash
-~/.config/omarchy/plugins/im0001gt.screens/scripts/display-ctl restore-original
-omarchy plugin remove im0001gt.screens
+~/.config/omarchy/plugins/sykesthelord.screens/scripts/display-ctl restore-original
+omarchy plugin remove sykesthelord.screens
 ```
 
-That puts back `monitors.lua`, `bindings.lua`, `shell.json`, and any workspace-layout files Screens captured, then removes the scale-key block, the brightness wrapper Screens added, and the generated `im0001gt.screens.workspaces` companion plugin.
+That puts back `monitors.lua`, `bindings.lua`, `shell.json`, and any workspace-layout files Screens captured, then removes the scale-key block, the brightness wrapper Screens added, and the generated `sykesthelord.screens.workspaces` companion plugin.
 
 Omarchy does not run an uninstall hook. If the plugin is already gone, the same restore still works from the first-install copy (it survives `plugin remove` and is independent of Timeshift or other system snapshots):
 
 ```bash
-~/.local/state/im0001gt.screens/restore.sh
+~/.local/state/sykesthelord.screens/restore.sh
 ```
 
-Profiles stay in `~/.local/state/im0001gt.screens/` until you delete that directory.
+Profiles stay in `~/.local/state/sykesthelord.screens/` until you delete that directory.
 
 ## Security and data
 
@@ -147,7 +147,7 @@ Plugins run as unsandboxed code inside `omarchy-shell`. Screens does not use the
 - `~/.config/hypr/bindings.lua` — Super+/ and Super+Alt+/ scale keys
 - `~/.config/omarchy/shell.json` — only if you turn on workspace spreading, to swap the workspace widget
 - `~/.local/state/omarchy/workspace-layouts/` — Tile / Scroll / Float per workspace
-- `~/.local/state/im0001gt.screens/` — profiles, backups, Pixel Care settings (`bar-care.json`), and the restore helper
+- `~/.local/state/sykesthelord.screens/` — profiles, backups, Pixel Care settings (`bar-care.json`), and the restore helper
 
 ## Requirements
 

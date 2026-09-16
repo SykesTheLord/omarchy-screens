@@ -9,7 +9,7 @@ import "Model.js" as Model
 
 BarWidget {
   id: root
-  moduleName: "im0001gt.screens.workspaces"
+  moduleName: "sykesthelord.screens.workspaces"
 
   property var assignment: ({ enabled: false, monitors: [], layouts: {}, labels: {} })
   property int menuWorkspace: 0
@@ -145,7 +145,7 @@ BarWidget {
     var n = Model.workspaceId(root.menuWorkspace)
     if (!n) return
     labelProc.command = [
-      Quickshell.env("HOME") + "/.config/omarchy/plugins/im0001gt.screens/scripts/display-ctl",
+      Quickshell.env("HOME") + "/.config/omarchy/plugins/sykesthelord.screens/scripts/display-ctl",
       "workspace-label",
       String(n),
       String(name || ""),
@@ -159,7 +159,7 @@ BarWidget {
     var n = Model.workspaceId(root.menuWorkspace)
     if (!n) return
     layoutProc.command = [
-      Quickshell.env("HOME") + "/.config/omarchy/plugins/im0001gt.screens/scripts/display-ctl",
+      Quickshell.env("HOME") + "/.config/omarchy/plugins/sykesthelord.screens/scripts/display-ctl",
       "workspace-layout",
       String(n),
       mode
@@ -173,7 +173,7 @@ BarWidget {
   implicitHeight: grid.implicitHeight
 
   FileView {
-    path: Quickshell.env("HOME") + "/.local/state/im0001gt.screens/workspaces.json"
+    path: Quickshell.env("HOME") + "/.local/state/sykesthelord.screens/workspaces.json"
     watchChanges: true
     printErrors: false
     onLoaded: {

@@ -10,8 +10,8 @@ import "Model.js" as Model
 
 Panel {
   id: root
-  moduleName: "im0001gt.screens"
-  ipcTarget: "im0001gt.screens"
+  moduleName: "sykesthelord.screens"
+  ipcTarget: "sykesthelord.screens"
   manageIpc: false
 
   readonly property string ctl:
@@ -166,15 +166,15 @@ Panel {
   readonly property var careService: {
     try {
       return root.bar && root.bar.shell && typeof root.bar.shell.serviceFor === "function"
-        ? root.bar.shell.serviceFor("im0001gt.screens") : null
+        ? root.bar.shell.serviceFor("sykesthelord.screens") : null
     } catch (e) {
       return null
     }
   }
   readonly property string carePath:
-    Quickshell.env("HOME") + "/.local/state/im0001gt.screens/bar-care.json"
+    Quickshell.env("HOME") + "/.local/state/sykesthelord.screens/bar-care.json"
   readonly property string panelStatePath:
-    Quickshell.env("HOME") + "/.local/state/im0001gt.screens/panel.json"
+    Quickshell.env("HOME") + "/.local/state/sykesthelord.screens/panel.json"
   property bool stickyPanel: false
   property string panelOwnerScreen: ""
   property int resumeTries: 0
@@ -1219,7 +1219,7 @@ Panel {
 
   IpcHandler {
     enabled: root.isFocusedBar
-    target: "im0001gt.screens"
+    target: "sykesthelord.screens"
     function open(): void { root.open() }
     function close(): void { root.close() }
     function show(): void { root.open() }
@@ -3404,7 +3404,7 @@ Panel {
     anchors { top: true; bottom: true; left: true; right: true }
     exclusionMode: ExclusionMode.Ignore
     mask: Region {}
-    WlrLayershell.namespace: "im0001gt.screens-identify"
+    WlrLayershell.namespace: "sykesthelord.screens-identify"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
@@ -3461,7 +3461,7 @@ Panel {
       anchors { top: true; bottom: true; left: true; right: true }
       exclusionMode: ExclusionMode.Ignore
       mask: Region {}
-      WlrLayershell.namespace: "im0001gt.screens-standby"
+      WlrLayershell.namespace: "sykesthelord.screens-standby"
       WlrLayershell.layer: WlrLayer.Overlay
       WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     }
